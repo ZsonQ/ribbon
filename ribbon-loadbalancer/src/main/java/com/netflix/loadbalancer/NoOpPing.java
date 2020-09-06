@@ -21,6 +21,9 @@ package com.netflix.loadbalancer;
  * No Op Ping
  * @author stonse
  *
+ * 心跳检测实现类
+ * 永远返回true，即认为服务永远活着
+ *
  */
 public class NoOpPing implements IPing {
 

@@ -26,7 +26,15 @@ import java.util.List;
  * server from the existing list of server.
  * 
  * @author stonse
- * 
+ *
+ * 接口定义了各种软负载，动态更新一组服务列表及根据指定算法从现有服务器列表中选择一个服务
+ * 		DynamicServerListLoadBalancer
+ * 			DynamicServerListLoadBalancer组合Rule、IPing、ServerList、ServerListFilter、ServerListUpdater 实现类，
+ * 			实现动态更新和过滤更新服务列表
+ * 		ZoneAwareLoadBalancer
+ *			DynamicServerListLoadBalancer的子类，主要加入zone的因素。统计每个zone的平均请求的情况，
+ *			保证从所有zone选取对当前客户端服务最好的服务组列表
+ *
  */
 public interface ILoadBalancer {
 

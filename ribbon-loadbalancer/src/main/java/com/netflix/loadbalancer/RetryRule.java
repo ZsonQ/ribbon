@@ -24,7 +24,10 @@ import com.netflix.client.config.IClientConfig;
  * {@link IRule} can be cascaded, this {@link RetryRule} class allows adding a retry logic to an existing Rule.
  * 
  * @author stonse
- * 
+ *
+ *负载均衡策略
+ * 轮询 + 重试
+ *
  */
 public class RetryRule extends AbstractLoadBalancerRule {
 	IRule subRule = new RoundRobinRule();

@@ -32,6 +32,9 @@ import com.netflix.loadbalancer.Server;
  * i.e. we dont do a real "ping". We just assume that the server is up if Discovery Client says so
  * @author stonse
  *
+ * 心跳检测实现类
+ * 不执行真正的ping。如果Discovery Client认为是在线，则程序认为本次心跳成功，服务活着
+ *
  */
 public class NIWSDiscoveryPing extends AbstractLoadBalancerPing {
 	        

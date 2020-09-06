@@ -66,6 +66,17 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * When there is not enough statistics gathered for the servers, this rule
  * will fall back to use {@link RoundRobinRule}. 
  * @author stonse
+ *
+ *
+ *  负载均衡策略
+ * 优先选择响应时间快，此策略会根据平均响应时间计算所有服务的权重，
+ * 响应时间越快，服务权重越重、被选中的概率越高。
+ * 此类有个DynamicServerWeightTask的定时任务，
+ * 默认情况下每隔30秒会计算一次各个服务实例的权重。
+ * 刚启动时，如果统计信息不足，则使用RoundRobinRule策略，
+ * 等统计信息足够，会切换回来
+ *
+ *
  */
 public class WeightedResponseTimeRule extends RoundRobinRule {
 

@@ -43,6 +43,11 @@ import javax.inject.Provider;
  *
  * @author stonse
  *
+ *
+ * 从Eureka Client中获取服务列表。此值必须通过属性中的VipAddress来标识服务器集群。
+ * DynamicServerListLoadBalancer（之前也提过）会调用此对象动态获取服务列表。
+ *
+ *
  */
 public class DiscoveryEnabledNIWSServerList extends AbstractServerList<DiscoveryEnabledServer>{
 
@@ -143,11 +148,19 @@ public class DiscoveryEnabledNIWSServerList extends AbstractServerList<Discovery
         return obtainServersViaDiscovery();
     }
 
+    /**
+     * 获取服务列表信息
+     * @return
+     */
     @Override
     public List<DiscoveryEnabledServer> getUpdatedListOfServers(){
         return obtainServersViaDiscovery();
     }
 
+    /**
+     * 获取服务列表信息
+     * @return
+     */
     private List<DiscoveryEnabledServer> obtainServersViaDiscovery() {
         List<DiscoveryEnabledServer> serverList = new ArrayList<DiscoveryEnabledServer>();
 
@@ -160,6 +173,8 @@ public class DiscoveryEnabledNIWSServerList extends AbstractServerList<Discovery
         if (vipAddresses!=null){
             for (String vipAddress : vipAddresses.split(",")) {
                 // if targetRegion is null, it will be interpreted as the same region of client
+                // 如果targetRegion是null，它将被解释为客户端的同一区域
+                // 从客户端获取 applications 服务列表缓存信息
                 List<InstanceInfo> listOfInstanceInfo = eurekaClient.getInstancesByVipAddress(vipAddress, isSecure, targetRegion);
                 for (InstanceInfo ii : listOfInstanceInfo) {
                     if (ii.getStatus().equals(InstanceStatus.UP)) {
@@ -182,6 +197,7 @@ public class DiscoveryEnabledNIWSServerList extends AbstractServerList<Discovery
                         }
 
                         DiscoveryEnabledServer des = createServer(ii, isSecure, shouldUseIpAddr);
+                        //将服务列表信息缓存到这个list中
                         serverList.add(des);
                     }
                 }

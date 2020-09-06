@@ -27,6 +27,9 @@ import java.util.concurrent.atomic.AtomicLong;
  * done on a separate scheduler as the notification is delivered on an eurekaClient thread.
  *
  * @author David Liu
+ *
+ * 当收到缓存刷新的通知，会更新服务列表
+ *
  */
 public class EurekaNotificationServerListUpdater implements ServerListUpdater {
 
@@ -128,6 +131,7 @@ public class EurekaNotificationServerListUpdater implements ServerListUpdater {
                             return;
                         }
 
+                        //定时拉取服务列表  默认30s
                         if (!refreshExecutor.isShutdown()) {
                             try {
                                 refreshExecutor.submit(new Runnable() {

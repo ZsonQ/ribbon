@@ -42,6 +42,11 @@ import com.netflix.servo.annotations.Monitor;
  *   
  * @author awang
  *
+ * 负载均衡策略
+ *
+ * 可用性过滤，会先过滤掉以下服务：由于多次访问故障而断路器处于打开的服务、并发的连接数量超过阈值，
+ * 然后对剩余的服务列表按照RoundRobinRule策略进行访问
+ *
  */
 public class AvailabilityFilteringRule extends PredicateBasedRule {    
 

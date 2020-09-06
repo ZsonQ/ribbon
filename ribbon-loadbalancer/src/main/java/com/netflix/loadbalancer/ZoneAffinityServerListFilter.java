@@ -42,6 +42,9 @@ import java.util.List;
  * 
  * @author stonse
  *
+ * 过滤掉所有的不和客户端在相同zone的服务，如果和客户端相同的zone不存在，才不过滤不同zone有服务。启用此配置使用：
+ * kxtx-oms.ribbon.EnableZoneAffinity=true
+ *
  */
 public class ZoneAffinityServerListFilter<T extends Server> extends
         AbstractServerListFilter<T> implements IClientConfigAware {

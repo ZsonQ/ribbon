@@ -5,6 +5,15 @@ package com.netflix.loadbalancer;
  * of doing dynamic server list updates.
  *
  * @author David Liu
+ *
+ * 接口使用不同的方法来做动态更新服务器列表
+ * 被DynamicServerListLoadBalancer用于动态的更新服务列表
+ *
+ *      PollingServerListUpdater
+ *          默认的实现策略。此对象会启动一个定时线程池，定时执行更新策略
+ *      EurekaNotificationServerListUpdater
+ *          当收到缓存刷新的通知，会更新服务列表
+ *
  */
 public interface ServerListUpdater {
 

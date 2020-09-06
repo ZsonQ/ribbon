@@ -38,6 +38,17 @@ import java.util.Set;
  * @author awang
  *
  * @param <T>
+ *
+ *
+ * ZoneAffinityServerListFilter的子类，确保客户端仅看到由ServerList实现返回的整个服务器的固定子集。 它还可以定期用新服务器替代可用性差的子集中的服务器。要启用此过滤器：
+ *      # 选择ServerList获取模式
+ *      kxtx-oms.ribbon.NIWSServerListClassName=com.netflix.niws.loadbalancer.DiscoveryEnabledNIWSServerList
+ *      # the server must register itself with Eureka server with VipAddress "myservice"
+ *      kxtx-oms.ribbon.DeploymentContextBasedVipAddresses=myservice
+ *      kxtx-oms.ribbon.NIWSServerListFilterClassName=com.netflix.loadbalancer.ServerListSubsetFilter
+ *      # only show client 5 servers. default is 20.
+ *      kxtx-oms.ribbon.ServerListSubsetFilter.size=5
+ *
  */
 public class ServerListSubsetFilter<T extends Server> extends ZoneAffinityServerListFilter<T> implements IClientConfigAware, Comparator<T>{
 

@@ -54,7 +54,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  * and an "up" server list and use them depending on what the caller asks for.
  * 
  * @author stonse
- * 
+ *
+ * 构建ping的定时器  默认10s
+ *
+ *
  */
 public class BaseLoadBalancer extends AbstractLoadBalancer implements
         PrimeConnections.PrimeConnectionListener, IClientConfigAware {
@@ -149,7 +152,7 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
         this.ping = ping;
         this.pingStrategy = pingStrategy;
         setRule(rule);
-        setupPingTask();
+        setupPingTask();  //构建ping的定时器  默认10s
         lbStats = stats;
         init();
     }
@@ -263,6 +266,9 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
         }
     }
 
+    /**
+     * 构建ping的定时器  默认10s
+     */
     void setupPingTask() {
         if (canSkipPing()) {
             return;
@@ -272,6 +278,7 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
         }
         lbTimer = new ShutdownEnabledTimer("NFLoadBalancer-PingTimer-" + name,
                 true);
+        //初始化Ping的定时调度类 默认10s
         lbTimer.schedule(new PingTask(), 0, pingIntervalSeconds * 1000);
         forceQuickPing();
     }
@@ -532,7 +539,7 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
             }
             // This will reset readyToServe flag to true on all servers
             // regardless whether
-            // previous priming connections are success or not
+
             allServerList = allServers;
             if (canSkipPing()) {
                 for (Server s : allServerList) {
@@ -629,11 +636,14 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
      * server/node in the Server List
      * 
      * @author stonse
-     * 
+     *
+     * 创建Ping的定时调度器 默认10s一次
+     *
      */
     class PingTask extends TimerTask {
         public void run() {
             try {
+                //创建Ping的定时调度器 默认10s一次
             	new Pinger(pingStrategy).runPinger();
             } catch (Exception e) {
                 logger.error("LoadBalancer [{}]: Error pinging", name, e);
@@ -645,7 +655,7 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
      * Class that contains the mechanism to "ping" all the instances
      * 
      * @author stonse
-     *
+     * 创建Ping的定时调度器 默认10s一次
      */
     class Pinger {
 
@@ -679,6 +689,8 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
                 allLock.unlock();
 
                 int numCandidates = allServers.length;
+
+                // 开始进行ping
                 results = pingerStrategy.pingServers(ping, allServers);
 
                 final List<Server> newUpList = new ArrayList<Server>();
@@ -886,6 +898,12 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
      */
     private static class SerialPingStrategy implements IPingStrategy {
 
+        /**
+         * 开始进行ping心跳连接
+         * @param ping
+         * @param servers
+         * @return
+         */
         @Override
         public boolean[] pingServers(IPing ping, Server[] servers) {
             int numCandidates = servers.length;
@@ -908,6 +926,15 @@ public class BaseLoadBalancer extends AbstractLoadBalancer implements
                     // hence we can afford to simplify this design and run
                     // this
                     // serially
+                    ////注:如果我们在做一个真正的ping
+                    ////假设我们有大量服务器(比如15台)
+                    ////下面的逻辑将串行地运行它们
+                    ////因此花费的时间是所需时间的15倍
+                    //// ping每个服务器
+                    ////更好的方法是把这个交给一个遗嘱执行人
+                    ////但是，在写本文的时候，我们并不真的
+                    ////使用一个真正的Ping(它主要在内存中eureka调用)
+                    ////因此，我们可以简化设计和运行
                     if (ping != null) {
                         results[i] = ping.isAlive(servers[i]);
                     }

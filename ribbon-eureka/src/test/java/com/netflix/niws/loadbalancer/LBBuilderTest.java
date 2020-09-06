@@ -40,6 +40,27 @@ import static org.junit.Assert.*;
 import static org.powermock.api.easymock.PowerMock.createMock;
 import static org.powermock.api.easymock.PowerMock.replay;
 
+/**
+ *
+ * Ribbon主要组件：
+ *      IRule，上面讲过
+ *      IPing，接口定义了我们如何“ping”服务器检查是否活着
+ *      ServerList，定义了获取服务器的列表接口，存储服务列表
+ *      ServerListFilter，接口允许过滤配置或动态获得的候选列表服务器
+ *      ServerListUpdater，接口使用不同的方法来做动态更新服务器列表
+ *      IClientConfig，定义了各种api所使用的客户端配置，用来初始化ribbon客户端和负载均衡器，默认实现是DefaultClientConfigImpl
+ *      ILoadBalancer，接口定义了各种软负载，动态更新一组服务列表及根据指定算法从现有服务器列表中选择一个服务
+ *
+ *  ribbon的默认配置类
+ *      IClientConfig	DefaultClientConfigImpl
+ *      IRule	ZoneAvoidanceRule
+ *      IPing	DummyPing
+ *      ServerList	ConfigurationBasedServerList
+ *      ServerListFilter	ZonePreferenceServerListFilter
+ *      ILoadBalancer	ZoneAwareLoadBalancer
+ *      ServerListUpdater	PollingServerListUpdater
+ *
+ */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest( {DiscoveryManager.class, DiscoveryClient.class} )
 @PowerMockIgnore({"javax.management.*", "com.sun.jersey.*", "com.sun.*", "org.apache.*", "weblogic.*", "com.netflix.config.*", "com.sun.jndi.dns.*",

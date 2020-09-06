@@ -23,7 +23,10 @@ import com.netflix.client.config.IClientConfig;
  * Default simple implementation that marks the liveness of a Server
  * 
  * @author stonse
- * 
+ *
+ * 心跳检测实现类
+ * 默认实现，默认返回true，即认为服务永远活着
+ *
  */
 public class DummyPing extends AbstractLoadBalancerPing {
 

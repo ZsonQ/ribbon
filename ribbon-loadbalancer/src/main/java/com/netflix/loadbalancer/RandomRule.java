@@ -27,7 +27,10 @@ import java.util.concurrent.ThreadLocalRandom;
  * servers.
  * 
  * @author stonse
- * 
+ *
+ * 负载均衡策略
+ * 随机，使用Random对象从服务列表中随机选择一个服务
+ *
  */
 public class RandomRule extends AbstractLoadBalancerRule {
 

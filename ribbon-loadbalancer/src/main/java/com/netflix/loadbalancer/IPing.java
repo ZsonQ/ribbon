@@ -21,6 +21,15 @@ package com.netflix.loadbalancer;
  * Interface that defines how we "ping" a server to check if its alive
  * @author stonse
  *
+ * 心跳检测的顶级接口
+ *
+ * 子类实现类
+ *      NIWSDiscoveryPing ，不执行真正的ping。如果Discovery Client认为是在线，则程序认为本次心跳成功，服务活着
+ *      PingUrl ，使用HttpClient调用服务的一个URL，如果调用成功，则认为本次心跳成功，表示此服务活着
+ *      NoOpPing ，永远返回true，即认为服务永远活着
+ *      DummyPing ，默认实现，默认返回true，即认为服务永远活着
+ *
+ *
  */
 public interface IPing {
     

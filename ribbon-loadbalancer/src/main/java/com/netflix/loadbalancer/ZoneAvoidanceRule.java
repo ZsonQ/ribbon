@@ -32,6 +32,9 @@ import com.netflix.client.config.IClientConfig;
  * 
  * @author awang
  *
+ * 负载均衡策略
+ * 可以实现避免可能访问失效的区域(zone)
+ *
  */
 public class ZoneAvoidanceRule extends PredicateBasedRule {
 

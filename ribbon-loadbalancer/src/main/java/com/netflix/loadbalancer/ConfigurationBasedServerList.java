@@ -33,7 +33,11 @@ import com.netflix.client.config.IClientConfig;
 }</pre>
  * 
  * @author awang
- * 
+ *
+ *
+ * 从配置文件中获取所有服务列表，比如：
+ * kxtx-oms.ribbon.listOfServers=www.microsoft.com:80,www.yahoo.com:80,www.google.com:80
+ *
  */
 public class ConfigurationBasedServerList extends AbstractServerList<Server>  {
 

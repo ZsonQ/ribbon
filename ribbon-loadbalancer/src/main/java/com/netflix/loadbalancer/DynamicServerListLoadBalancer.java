@@ -40,7 +40,11 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * meet the desired criteria.
  * 
  * @author stonse
- * 
+ *
+ *
+ * DynamicServerListLoadBalancer组合Rule、IPing、ServerList、ServerListFilter、ServerListUpdater 实现类，
+ * 实现动态更新和过滤更新服务列表
+ *
  */
 public class DynamicServerListLoadBalancer<T extends Server> extends BaseLoadBalancer {
     private static final Logger LOGGER = LoggerFactory.getLogger(DynamicServerListLoadBalancer.class);
@@ -55,9 +59,13 @@ public class DynamicServerListLoadBalancer<T extends Server> extends BaseLoadBal
 
     volatile ServerListFilter<T> filter;
 
+    /**
+     * 定时服务拉取 默认30s
+     */
     protected final ServerListUpdater.UpdateAction updateAction = new ServerListUpdater.UpdateAction() {
         @Override
         public void doUpdate() {
+            // 定时服务拉取
             updateListOfServers();
         }
     };
@@ -81,16 +89,28 @@ public class DynamicServerListLoadBalancer<T extends Server> extends BaseLoadBal
         );
     }
 
+    /**
+     * 创建接口定义了各种软负载，动态更新一组服务列表及根据指定算法从现有服务器列表中选择一个服务
+     * @param clientConfig
+     * @param rule
+     * @param ping
+     * @param serverList
+     * @param filter
+     * @param serverListUpdater
+     */
     public DynamicServerListLoadBalancer(IClientConfig clientConfig, IRule rule, IPing ping,
                                          ServerList<T> serverList, ServerListFilter<T> filter,
                                          ServerListUpdater serverListUpdater) {
-        super(clientConfig, rule, ping);
+        super(clientConfig, rule, ping);  // 初始化负载均衡器和心跳连接模式
         this.serverListImpl = serverList;
         this.filter = filter;
-        this.serverListUpdater = serverListUpdater;
-        if (filter instanceof AbstractServerListFilter) {
+        this.serverListUpdater = serverListUpdater;  //初始化服务列表定时更新器
+        if (filter instanceof AbstractServerListFilter) { //初始化服务列表过滤器
             ((AbstractServerListFilter) filter).setLoadBalancerStats(getLoadBalancerStats());
         }
+
+        //启动时配置刷新
+        //ribbon初始化和配置刷新
         restOfInit(clientConfig);
     }
 
@@ -134,12 +154,21 @@ public class DynamicServerListLoadBalancer<T extends Server> extends BaseLoadBal
         }
     }
 
+    /**
+     * 启动时配置刷新
+     * ribbon初始化和配置刷新
+     *
+     * @param clientConfig
+     */
     void restOfInit(IClientConfig clientConfig) {
         boolean primeConnection = this.isEnablePrimingConnections();
         // turn this off to avoid duplicated asynchronous priming done in BaseLoadBalancer.setServerList()
         this.setEnablePrimingConnections(false);
+        //启动服务列表刷新定时器
         enableAndInitLearnNewServersFeature();
 
+        //更新服务列表
+        //到注册中心的客户端读取服务列表配置
         updateListOfServers();
         if (primeConnection && this.getPrimeConnections() != null) {
             this.getPrimeConnections()
@@ -216,6 +245,9 @@ public class DynamicServerListLoadBalancer<T extends Server> extends BaseLoadBal
      * Feature that lets us add new instances (from AMIs) to the list of
      * existing servers that the LB will use Call this method if you want this
      * feature enabled
+     *
+     * 启用服务列表刷新
+     *
      */
     public void enableAndInitLearnNewServersFeature() {
         LOGGER.info("Using serverListUpdater {}", serverListUpdater.getClass().getSimpleName());
@@ -232,26 +264,40 @@ public class DynamicServerListLoadBalancer<T extends Server> extends BaseLoadBal
         }
     }
 
+    /**
+     * 定时服务拉取  默认30s
+     *
+     * 到注册中心的客户端读取服务列表配置并进行缓存 此后直接从本地获取服务列表信息
+     *
+     */
     @VisibleForTesting
     public void updateListOfServers() {
         List<T> servers = new ArrayList<T>();
+        // serverListImpl：微服务名称
         if (serverListImpl != null) {
+            //  更新服务列表 默认30s
+            // servers：微服务真实ip
             servers = serverListImpl.getUpdatedListOfServers();
             LOGGER.debug("List of Servers for {} obtained from Discovery client: {}",
                     getIdentifier(), servers);
 
             if (filter != null) {
+                // 设置需要过滤的服务列表
                 servers = filter.getFilteredListOfServers(servers);
                 LOGGER.debug("Filtered List of Servers for {} obtained from Discovery client: {}",
                         getIdentifier(), servers);
             }
         }
+        //如果需要并启用，更新LoadBalancer中的AllServer列表
         updateAllServerList(servers);
     }
 
     /**
      * Update the AllServer list in the LoadBalancer if necessary and enabled
-     * 
+     *
+     * 如果需要并启用，更新LoadBalancer中的AllServer列表
+     * 如果需要并启用，更新LoadBalancer中的AllServer列表
+     *
      * @param ls
      */
     protected void updateAllServerList(List<T> ls) {

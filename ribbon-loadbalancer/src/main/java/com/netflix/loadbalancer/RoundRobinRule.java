@@ -30,6 +30,9 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author stonse
  * @author Nikos Michalakis <nikos@netflix.com>
  *
+ *负载均衡策略
+ * 轮训策略，默认策略
+ *
  */
 public class RoundRobinRule extends AbstractLoadBalancerRule {
 

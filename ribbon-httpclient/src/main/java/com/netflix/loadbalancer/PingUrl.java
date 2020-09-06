@@ -43,7 +43,9 @@ import java.io.IOException;
  * Choose your Ping based on your needs.
  * 
  * @author stonse
- * 
+ *
+ * 心跳检测实现类
+ * 使用HttpClient调用服务的一个URL，如果调用成功，则认为本次心跳成功，表示此服务活着
  */
 public class PingUrl implements IPing {
     private static final Logger LOGGER = LoggerFactory.getLogger(PingUrl.class);

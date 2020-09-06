@@ -51,6 +51,10 @@ For each request, the steps above will be repeated. That is to say, each zone re
  * @author awang
  *
  * @param <T>
+ *
+ * DynamicServerListLoadBalancer的子类，主要加入zone的因素。统计每个zone的平均请求的情况，
+ * 保证从所有zone选取对当前客户端服务最好的服务组列表
+ *
  */
 public class ZoneAwareLoadBalancer<T extends Server> extends DynamicServerListLoadBalancer<T> {
 

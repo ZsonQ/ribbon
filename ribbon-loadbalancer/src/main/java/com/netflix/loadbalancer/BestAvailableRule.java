@@ -31,6 +31,10 @@ import java.util.List;
  * 
  * @author awang
  *
+ * 负载均衡策略
+ * 优先选择并发请求最小的，刚启动时吗，如果统计信息不足，
+ * 则使用RoundRobinRule策略，等统计信息足够，才会切换回来
+ *
  */
 public class BestAvailableRule extends ClientConfigEnabledRoundRobinRule {
 

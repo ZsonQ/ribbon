@@ -24,6 +24,17 @@ import java.util.List;
  * @author stonse
  *
  * @param <T>
+ *
+ * 定义了获取服务器的列表接口，存储服务列表
+ * 服务列表分为静态和动态。如果是动态的，后台有个线程会定时刷新和过滤服务列表
+ *
+ * 服务列表分为静态和动态。如果是动态的，后台有个线程会定时刷新和过滤服务列表
+ *      ConfigurationBasedServerList
+ *          从配置文件中获取所有服务列表，比如：
+ *          kxtx-oms.ribbon.listOfServers=www.microsoft.com:80,www.yahoo.com:80,www.google.com:80
+ *      DiscoveryEnabledNIWSServerList
+ *          从Eureka Client中获取服务列表。此值必须通过属性中的VipAddress来标识服务器集群。DynamicServerListLoadBalancer（之前也提过）会调用此对象动态获取服务列表。
+ *
  */
 public interface ServerList<T extends Server> {
 
@@ -32,6 +43,9 @@ public interface ServerList<T extends Server> {
     /**
      * Return updated list of servers. This is called say every 30 secs
      * (configurable) by the Loadbalancer's Ping cycle
+     *
+     *
+     * 更新服务列表 默认30s
      * 
      */
     public List<T> getUpdatedListOfServers();   
